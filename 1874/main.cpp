@@ -1,72 +1,52 @@
 #include <iostream>
+#include <stack>
 
 using namespace std;
-class Stack
-{
-public:
-	int data;
-	Stack* next = nullptr;
-	int GetTop()
-	{
-		Stack* top = next;
-		if (top == nullptr)
-		{
-			return -1;
-		}
-		return top->data;
-	}
-	int Pop()
-	{
-		Stack* popData = this->next;
-		if (popData == nullptr)
-		{
-			return -1;
-		}
-		int data = popData->data;
-		this->next = popData->next;
-		delete popData;
-		return data;
-	}
-	void Push(int data)
-	{
-		Stack* s = new Stack;
-		s->data = data;
-		s->next = this->next;
-		this->next = s;
-	}
 
-};
 
 int main()
 {
-	Stack* stack = new Stack();
-	int n = 1;
-	int count = 0;
+	stack<int> data;
+	int n = 0;
+	int i = 0;
+	int num = 1;
 	cin >> n;
-	int* destiny = new int[n];
-	char* pm = new char[n * 2];
+	int* sol = new int[n];
+	char* pm = new char[n*2];
 	int pmIndex = 0;
-	for (int i = 0; i < n; i++)
+	for (i = 0; i < n; i++)
 	{
-		cin >> *(destiny + i);
+		cin >> sol[i];
 	}
-	for (int i = 1; i <= n; i++)
+	i = 0;
+	while (num<=n)
 	{
-		stack->Push(i);
+		data.push(num);
 		pm[pmIndex] = '+';
 		pmIndex++;
-		while (stack->GetTop() == destiny[count])
+		num++;
+		while (data.top() == sol[i])
 		{
-			count++;
-			stack->Pop();
+			data.pop();
 			pm[pmIndex] = '-';
 			pmIndex++;
+			i++;
+			if (pmIndex == n * 2||data.size()==0)
+				break;
+		} 
+	}
+	if (pmIndex == n * 2)
+	{
+		for (i = 0; i < pmIndex; i++)
+		{
+			printf("%c\n", pm[i]);
 		}
 	}
-	for (int i = 0; i < n * 2; i++)
+	else
 	{
-		cout << pm[i];
+		printf("NO");
 	}
+	
 
 	return 0;
 }
