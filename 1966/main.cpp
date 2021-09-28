@@ -1,33 +1,97 @@
 #include <iostream>
+#include <vector>
 #include <queue>
-
-
+#include <list>
 using namespace std;
 
+class Data
+{
+public:
+	int num;
+	bool checked = false;
+};
+
+int PrintNum(list<Data> dataList)
+{
+	
+	int answer = 0;
+	while (true)
+	{
+		list<Data>::iterator begin = dataList.begin();
+		list<Data>::iterator end;
+		list<Data>::iterator iter = begin;
+		list<Data>::iterator maxData = begin;
+		int size = dataList.size();
+		int i = 0;
+		for (i = 0; i < size; i++)
+		{
+			if (iter->num > maxData->num)
+			{
+				maxData = iter;
+			}
+			if (i == size - 1)
+			{
+				end = iter;
+			}
+			iter++;
+		}
+		answer++;
+		if (maxData->checked == true)
+			return answer;
+
+		while (true)
+		{
+			begin = dataList.begin();
+			if (maxData == begin)
+			{
+				dataList.erase(maxData);
+				break;
+			}
+			else
+			{
+				dataList.push_back(*begin);
+				dataList.pop_front();
+			}
+		}
+		
+	}
+}
 
 int main()
 {
-	int testcase = 0;
-	scanf("%d", &testcase);
-	int N;
-	int M;
-	int data;
-	int inputdata = 0;
+	int testCase = 0;
 	int i = 0;
 	int j = 0;
-	int* answer = new int[testcase];
-	for (i = 0; i < testcase; i++)
+	cin >> testCase;
+	int* N = new int[testCase];
+	int* M = new int[testCase];
+	int inputdata = 0;
+
+	list<Data>* dataList = new list<Data>[testCase];
+	for (i = 0; i < testCase; i++)
 	{
-		scanf("%d", &N);
-		scanf("%d", &M);
-		priority_queue<int> pq;
-		for (j = 0; j < N; j++)
+		cin >> N[i];
+		cin >> M[i];
+		for (j = 0; j < N[i]; j++)
 		{
-			scanf("%d", &data);
-			pq.push(data);
+			cin >> inputdata;
+			if (j != M[i])
+			{
+				Data InputData = { inputdata,false };
+				dataList[i].push_back(InputData);
+			}
+			else
+			{
+				Data InputData = { inputdata,true };
+				dataList[i].push_back(InputData);
+			}
 		}
-		pq.
+	}
+	for (i = 0; i < testCase; i++)
+	{
+		printf("%d\n",PrintNum(dataList[i]));
 	}
 	
+
 	return 0;
 }
