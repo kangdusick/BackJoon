@@ -1,6 +1,5 @@
-#include <list>
 #include <iostream>
-#include <vector>
+#include <stack>
 using namespace std;
 
 int main()
@@ -9,72 +8,73 @@ int main()
 	int i = 0;
 	int j = 0;
 	cin >> n;
-	list<char>* passWard = new list<char>[n];
+	stack<char> leftStack;
+	stack<char> rightStack;
 	string* log = new string[n];
+	char** answer = new char*[n];
+	int logSize = 0;
+	int leftSize = 0;
+	int rightSize = 0;
 	for (i = 0; i < n; i++)
 	{
 		cin >> log[i];
 	}
+
 	for (i = 0; i < n; i++)
 	{
-		list<char>::iterator iter;
-		vector<list<char>::iterator> iterList;
-		int logSize = log[i].size();
-		int nowCurser = 0;
-		int k = 0;
-		int iterListIndex = 0;
+		logSize = log[i].size();
 		for (j = 0; j < logSize; j++)
 		{
 			switch (log[i][j])
 			{
 			case '<':
-				if(nowCurser>0)
-					nowCurser--;
-				break;
-			case '>':
-				if(nowCurser<passWard[i].size())
-					nowCurser++;
-				break;
-			case '-':
-				if (passWard[i].size() == 0)
+				if (leftStack.size() == 0)
 				{
 					break;
 				}
-				nowCurser--;
-				iter = passWard[i].begin();
-				for (k = 0; k < nowCurser; k++)
+				rightStack.push(leftStack.top());
+				leftStack.pop();
+				break;
+			case '>':
+				if (rightStack.size() == 0)
 				{
-					iter++;
+					break;
 				}
-				passWard[i].erase(iter);
+				leftStack.push(rightStack.top());
+				rightStack.pop();
+				break;
+			case '-':
+				if (leftStack.size() == 0)
+				{
+					break;
+				}
+				leftStack.pop();
 				break;
 			default:
-				if (nowCurser == 0)
-				{
-					iter = passWard[i].begin();
-				}
-				else
-				{
-					iter = iterList[nowCurser];
-				}
-				passWard[i].insert(iter, log[i][j]);
-				iterList.push_back(iter);
-				nowCurser++;
+				leftStack.push(log[i][j]);
 				break;
 			}
 		}
+		rightSize = rightStack.size();
+		leftSize = leftStack.size();
+		int totalSize = rightSize + leftSize;
+		answer[i] = new char[totalSize+1];
+		answer[i][totalSize] = '\0';
+		for (j = leftSize; j < totalSize; j++)
+		{
+			answer[i][j] = rightStack.top();
+			rightStack.pop();
+		}
+		for (j = 0; j < leftSize; j++)
+		{
+			answer[i][leftSize - j - 1] = leftStack.top();
+			leftStack.pop();
+		}
+		
 	}
 	for (i = 0; i < n; i++)
 	{
-		list<char>::iterator iter = passWard[i].begin();
-		int size = passWard[i].size();
-		for (j = 0; j < size; j++)
-		{
-			printf("%c", *iter);
-			iter++;
-		}
-		printf("\n");
+		printf("%s\n", answer[i]);
 	}
-
 	return 0;
 }
