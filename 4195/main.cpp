@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {	ios_base::sync_with_stdio(false); 
 	cin.tie(NULL);
-	int test;
+	int testcase;
 	int F;
 	int i;
 	int j;
