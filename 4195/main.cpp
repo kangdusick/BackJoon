@@ -71,7 +71,7 @@ int main()
 			}
 			else if (networkCount1 != 0 && networkCount2 != 0 && network[name1]!=network[name2])
 			{
-				if (networkCount[network[name1]] > networkCount[network[name2]]) //name2╦╕ name1©║ гуд║╟М ╩Ха╕го╠Б.
+				if (networkCount[network[name1]] > networkCount[network[name2]]) //name2б╦б╕ name1б©б║ ц┤ц∙ц└б║б╟ц╜ б╩ц╗ц│б╕ц┤ц▐б╠ц╒.
 				{
 					string temp = network[name2];
 					int ii = netwrokVector[network[name2]].size();
