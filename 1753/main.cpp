@@ -1,77 +1,64 @@
 #include <iostream>
-#include <map>
+#include <vector>
+#include <queue>
+#define infn 2100000
+#define limitIndex 20001
 using namespace std;
 int V, E,K;
-map<int, int>gragh[20001]; //key: u에서 key:v로 가는 value 가중치 w
-map<int, int>::iterator iter;
-int daicstra[20001];
-bool checkDaicstra[20001];
+vector<pair<int,int>> gragh[limitIndex]; //index: u에서 second:v로 가는 second 가중치 w
+int daicstra[limitIndex];
+priority_queue<pair<int, int>> pq; //first: 거리 second: 인덱스
 void init()
 {
-	for (int i = 0; i < 20001; i++)
+	for (int i = 0; i < limitIndex; i++)
 	{
-		daicstra[i] = 2100000000;
+		daicstra[i] = infn;
 	}
 }
 void SetDaicstra(int num)
 {
+	pq.pop();
 	int size = gragh[num].size();
-	int min = 2100000000;
+	int min = infn;
 	int minIndex;
-	iter = gragh[num].begin();
 	for (int i = 0; i < size; i++)
 	{
-		if (daicstra[num] + iter->second < daicstra[iter->first])
+		int sum = daicstra[num] + gragh[num][i].second;
+		if (sum < daicstra[gragh[num][i].first])
 		{
-			daicstra[iter->first] = daicstra[num] + iter->second;
-		}
-		iter++;
-	}
-	checkDaicstra[num] = true;
-	//아직 안찾은 다익스트라 중에서 가장 작은값을 찾아 재귀적으로 실행하기
-	for (int i = 1; i <= V; i++)
-	{
-		if (checkDaicstra[i] == false&&daicstra[i]<min)
-		{
-			min = daicstra[i];
-			minIndex = i;
+			daicstra[gragh[num][i].first] = sum;
+			pq.push(make_pair(-sum, gragh[num][i].first));
 		}
 	}
-	if (min == 2100000000)
+	if (pq.empty())
 	{
 		return;
 	}
 	else
 	{
-		SetDaicstra(minIndex);
+		SetDaicstra(pq.top().second);
 	}
 }
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
+	cout.tie(NULL);
 	int u, v, w;
 	int uv;
 	cin >> V >> E >> K;
 	for (int i = 0; i < E; i++)
 	{
 		cin >> u >> v >> w;
-		uv = gragh[u][v];
-		if (uv == 0)
-		{
-			gragh[u][v] = w;
-		}
-		else if(uv >w)
-		{
-			gragh[u][v] = w;
-		}
+		gragh[u].push_back(make_pair(v,w));
 	}
 	init();
 	daicstra[K] = 0;
+	pq.push(make_pair(0, K));
 	SetDaicstra(K);
 	for (int i = 1; i <= V; i++)
 	{
-		if (daicstra[i] == 2100000000)
+		if (daicstra[i] == infn)
 		{
 			cout << "INF" << "\n";
 		}
@@ -126,5 +113,13 @@ int main()
 답:
 INF
 0
+
+
+3 4
+1
+2 1 1
+2 3 2
+2 1 3
+2 3 4
 
 */
