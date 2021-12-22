@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <math.h>
 using namespace std;
+
 class XY
 {
 public:

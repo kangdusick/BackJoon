@@ -25,7 +25,6 @@ int w(int a, int b, int c)
 			check[a][b][c] = true;
 			return dp[a][b][c] = w(20, 20, 20);
 		}
-
 	}
 	else if (a < b && b < c)
 	{

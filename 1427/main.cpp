@@ -16,6 +16,7 @@ int main()
 		data[a]++;
 		N /= 10;
 	}
+
 	for (int i = 9; i >= 0; i--)
 	{
 		while (data[i] > 0)
