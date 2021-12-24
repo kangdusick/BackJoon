@@ -1,13 +1,23 @@
 #include <iostream>
-#define maxIndex 5000001
 using namespace std;
-int arr[(1 << 25) / 32];
-int main()
-{
-	ios_base::sync_with_stdio();
-	cin.tie(0);
-	int x = 1;
-	x= x << 25;
+int arr[1048577];
 
-	return 0;
+int main() 
+{
+    ios_base::sync_with_stdio(false); 
+    cin.tie(NULL);
+    cout.tie(NULL);
+    int num;
+    while (cin >> num)
+    {
+        int Q = num / 32;
+        int R = 1 << (num % 32);
+        if (!(arr[Q]&R))
+        {
+            arr[Q] += R;
+            cout << num <<" ";
+        }
+    }
+    cout << "\n";
+    return 0;
 }
