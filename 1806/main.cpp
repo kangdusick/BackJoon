@@ -9,88 +9,49 @@ int main()
 	cin.tie(0);
 	cin >> N >> S;
 	vector<int> nums(N);
-	int Sum = 0;
-	int before = 0;
-	bool allSame = false;
+	int sum = 0;
+	int minLen = 2100000000;
+	int iter1, iter2;
 	for (int i = 0; i < N; i++)
 	{
 		cin >> nums[i];
-		Sum += nums[i];
+		sum += nums[i];
 	}
-	int iter1 = 0;
-	int iter2 = N - 1;
-	if (Sum < S)
+	if (sum < S)
 	{
-		cout << 0;
+		cout << 0<<"\n";
 		return 0;
 	}
-	before = Sum;
+	sum = nums[0];
+	iter1 = 0;
+	iter2 = 0;
+
 	while (true)
 	{
-		if (before >= S && Sum < S || iter1 >= iter2)
+		if (sum >= S)
+		{
+			int len = iter2 - iter1 + 1;
+			if (len < minLen)
+			{
+				minLen = len;
+				if (minLen == 1)
+				{
+					break;
+				}
+			}
+			sum -= nums[iter1];
+			iter1++;
+		}
+		else if (iter2 == N - 1)
 		{
 			break;
 		}
-		int sameCount = 0;
-		int iter11;
-		int iter22;
-		while (true)
+		else
 		{
-			if (!allSame)
-			{
-				iter11 = iter1 + sameCount;
-				iter22 = iter2 - sameCount;
-				if (nums[iter11] < nums[iter22])
-				{
-					before = Sum;
-					Sum -= nums[iter1];
-					iter1++;
-					break;
-				}
-				else if (nums[iter11] > nums[iter22])
-				{
-					before = Sum;
-					Sum -= nums[iter2];
-					iter2--;
-					break;
-				}
-				else
-				{
-					if (iter11 >= iter22)
-					{
-						allSame = true;
-						break;
-					}
-					sameCount++;
-				}
-			}
-			else
-			{
-				if (nums[iter1] < nums[iter2])
-				{
-					before = Sum;
-					Sum -= nums[iter1];
-					iter1++;
-					break;
-				}
-				else
-				{
-					before = Sum;
-					Sum -= nums[iter2];
-					iter2--;
-					break;
-				}
-			}
-			
+			iter2++;
+			sum += nums[iter2];
 		}
 	}
-	if (iter2 == iter1)
-	{
-		cout << 1 << "\n";
-	}
-	else
-	{
-		cout << iter2 - iter1 + 2 << "\n";
-	}
+	cout << minLen<<"\n";
 	return 0;
 }
