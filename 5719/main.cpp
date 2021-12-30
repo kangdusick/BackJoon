@@ -1,94 +1,92 @@
 #include <iostream>
-#include <map>
 #include <vector>
-#include <list>
-#include <algorithm>
+#include <map>
+#include <set>
+#define maxIndex 500
+#define maxNum 2100000000
 using namespace std;
-map<int, int> gragh[500];
-map<int, int> pointed[500];
-map<int, int>::iterator iter;
-list<vector<int>> pathList;
-list<vector<int>>::iterator pathiter;
-bool isVisited[500];
-int daicstra[500];
-int N, M, S, D;
-vector<int> solutions;
-void PathFind(int num, vector<int> path)
+int N, M;
+int S, D;
+vector<pair<int, int>> gragh[maxIndex]; //U에서 V로 가는 도로의 길이 P
+vector<pair<int, int>> pointed[maxIndex]; //[V]에 연결되어있는 도로 (U의 길이 P).
+int daicstra[maxIndex];
+set<pair<int, int>> forbidden;
+pair<int, int> path[10001]; //level에 할당된 도로 U,V
+bool checkDaic[maxIndex];
+void Init2()
 {
-	map<int, int>::iterator iter2 = pointed[num].begin();
-	int iterCount = pointed[num].size();
-	for (int i = 0; i < iterCount; i++)
-	{
-		if (daicstra[iter2->first] == daicstra[num] - iter2->second)
-		{
-			vector<int> curpath = path;
-			curpath.push_back(iter2->first);
-			if (iter2->first == S)
-			{
-				pathList.push_back(curpath);
-			}
-			else
-			{
-				PathFind(iter2->first, curpath);
-			}
-		}
-		iter2++;
-	}
-}
-void SetDaicstra(int num)
-{
-	iter = gragh[num].begin();
-	isVisited[num] = true;
-	int iCount = gragh[num].size();
-	int min = 2100000000;
-	int nextnum = -1;
-	for (int i = 0; i < iCount; i++)
-	{
-		if (daicstra[num] + iter->second < daicstra[iter->first])
-		{
-			daicstra[iter->first] = iter->second+ daicstra[num];
-		}
-		iter++;
-	}
-	for (int i = 0; i < N; i++)
-	{
-		if (isVisited[i] == false && daicstra[i] < min)
-		{
-			min = daicstra[i];
-			nextnum = i;
-		}
-	}
-	if (nextnum != -1)
-	{
-		SetDaicstra(nextnum);
-	}
-
-}
-void init2()
-{
-	for (int i = 0; i < 500; i++)
-	{
-		isVisited[i] = false;
-		daicstra[i] = 2100000000;
-	}
-}
-void init()
-{
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i < maxIndex; i++)
 	{
 		gragh[i].clear();
 		pointed[i].clear();
-		isVisited[i] = false;
-		daicstra[i] = 2100000000;
 	}
-	int pathSize = pathList.size();
-	pathiter = pathList.begin();
-	for (int i = 0; i < pathSize; i++)
+	forbidden.clear();
+}
+void Init()
+{
+	for (int i = 0; i < maxIndex; i++)
 	{
-		pathiter->clear();
-		pathiter++;
+		daicstra[i] = maxNum;
+		checkDaic[i] = false;
 	}
-	pathList.clear();
+	daicstra[S] = 0;
+}
+void SetDaicstra(int u)
+{
+	int vecSize = gragh[u].size();
+	int min = maxNum;
+	int minIndex;
+	checkDaic[u] = true;
+	for (int i = 0; i < vecSize; i++)
+	{
+		pair<int, int> check;
+		check.first = u;
+		check.second = gragh[u][i].first;
+		if (forbidden.find(check) != forbidden.end())
+		{
+			continue;
+		}
+		int cal = daicstra[u] + gragh[u][i].second;
+		if (daicstra[gragh[u][i].first] > cal)
+		{
+			daicstra[gragh[u][i].first] = cal;
+		}
+	}
+	for (int i = 0; i < maxIndex; i++)
+	{
+		if (daicstra[i] < min && checkDaic[i] == false)
+		{
+			min = daicstra[i];
+			minIndex = i;
+		}
+	}
+	if (min != maxNum)
+	{
+		SetDaicstra(minIndex);
+	}
+}
+void DFS(int level, int v, int totalLen)
+{
+	int pointedSize = pointed[v].size();
+	if (totalLen == daicstra[D] && v == S)
+	{
+		for (int i = 0; i < level; i++)
+		{
+			forbidden.insert(path[i]);
+		}
+		return;
+	}
+	for (int i = 0; i < pointedSize; i++)
+	{
+		int tempU = pointed[v][i].first;
+		int tempP = pointed[v][i].second;
+		if (totalLen + tempP <= daicstra[D])
+		{
+			path[level] = make_pair(tempU, v);
+			DFS(level + 1, tempU, totalLen + tempP);
+		}
+
+	}
 }
 int main()
 {
@@ -103,56 +101,39 @@ int main()
 			break;
 		}
 		cin >> S >> D;
-		init();
 		for (int i = 0; i < M; i++)
 		{
 			cin >> U >> V >> P;
-			gragh[U][V] = P; //U에서 V로 가는 길이 있는데, 길이가 P다.
-			pointed[V][U] = P; //V로 오는 길이가 P인 길 U가 있다.
+			gragh[U].push_back(make_pair(V, P));
+			pointed[V].push_back(make_pair(U, P));
 		}
-		daicstra[S] = 0;
+		Init();
 		SetDaicstra(S);
-		if (daicstra[D] == 2100000000)
-		{
-			solutions.push_back(-1);
-			continue;
-		}
-		vector<int> temp;
-		temp.push_back(D);
-		PathFind(D,temp);
-		int isize = pathList.size();
-		pathiter = pathList.begin();
-		for (int i = 0; i < isize; i++)
-		{
-			int iisize = (*pathiter).size();
-			for (int ii = iisize - 1; ii > 0; ii--)
-			{
-				iter = gragh[(*pathiter)[ii]].find((*pathiter)[ii-1]);
-				if (iter == gragh[(*pathiter)[ii]].end())
-				{
-					continue;
-				}
-				gragh[(*pathiter)[ii]].erase(iter);
-			}
-			pathiter++;
-		}
-		init2();
-		daicstra[S] = 0;
+		DFS(0, D, 0);
+		Init();
 		SetDaicstra(S);
-		if (daicstra[D] == 2100000000)
+		if (daicstra[D] == maxNum)
 		{
-			solutions.push_back(-1);
+			cout << -1 << "\n";
 		}
 		else
 		{
-			solutions.push_back(daicstra[D]);
+			cout << daicstra[D] << "\n";
 		}
-	}
-	int solSize = solutions.size();
-	for (int i = 0; i < solSize; i++)
-	{
-		cout << solutions[i] << endl;
+		Init2();
 	}
 
 	return 0;
 }
+
+/*
+5 6
+0 4
+0 1 2
+0 2 2
+1 2 1
+2 4 2
+2 3 1
+3 4 2
+답:6
+*/
