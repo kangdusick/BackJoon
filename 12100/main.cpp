@@ -1,264 +1,204 @@
 #include <iostream>
 #include <queue>
-#include <vector>
 using namespace std;
-int** blocks;
-int** BackupS;
+int** A;
+int** Origin;
 int N;
-int Sol = 0;
-
-void MoveUp()
+int sol = 0;
+queue<int> que;
+queue<int> FinalQueue;
+void MoveRight()
 {
-	queue<int> que;
-	for (int j = 0; j < N; j++) //왼쪽에서 오른쪽으로 이동하면서 그 열의 위에서 아래로, 블록 2개씩 비교해 숫자가 같으면 합친다.
+	for (int i = 0; i < N; i++)
 	{
-		vector<int> exceptZero;
-		for (int i = 0; i < N; i++)
+		int j = N - 1;
+		for (j; j>=0; j--)
 		{
-			if (blocks[i][j] != 0)
+			if (A[i][j] == 0)
 			{
-				exceptZero.push_back(blocks[i][j]);
+				continue;
 			}
-		}
-		int vectorSize = exceptZero.size();
-		if (vectorSize == 0)
-		{
-			continue;
-		}
-		for (int i = 0; i < vectorSize - 1; i++)
-		{
-			if (exceptZero[i] == exceptZero[i + 1])
+			if (que.size()>0 && que.front() == A[i][j])
 			{
-				que.push(exceptZero[i] * 2);
-				exceptZero[i] = 0;
-				exceptZero[i + 1] = 0;
-			}
-			else if (exceptZero[i] != 0)
-			{
-				que.push(exceptZero[i]);
-			}
-		}
-		if (exceptZero[vectorSize - 1] != 0)
-		{
-			que.push(exceptZero[vectorSize - 1]);
-		}
-		for (int i = 0; i < N; i++)
-		{
-			if (que.size() != 0)
-			{
-				blocks[i][j] = que.front();
-				if (blocks[i][j] > Sol)
-				{
-					Sol = blocks[i][j];
-				}
 				que.pop();
+				FinalQueue.push(A[i][j] * 2);
+			}
+			else if(que.size()>0)
+			{
+				FinalQueue.push(que.front());
+				que.pop();
+				que.push(A[i][j]);
 			}
 			else
 			{
-				blocks[i][j] = 0;
+				que.push(A[i][j]);
 			}
+			A[i][j] = 0;
 		}
-	}
-}
-void MoveDown()
-{
-	queue<int> que;
-	for (int j = 0; j < N; j++) //왼쪽에서 오른쪽으로 이동하면서 그 열의 아래에서 위로, 블록 2개씩 비교해 숫자가 같으면 합친다.
-	{
-		vector<int> exceptZero;
-		for (int i = N - 1; i >= 0; i--)
+		while (que.size()!=0)
 		{
-			if (blocks[i][j] != 0)
-			{
-				exceptZero.push_back(blocks[i][j]);
-			}
+			FinalQueue.push(que.front());
+			que.pop();
 		}
-		int vectorSize = exceptZero.size();
-		if (vectorSize == 0)
+		j = N - 1;
+		while (FinalQueue.size() != 0)
 		{
-			continue;
-		}
-		for (int i = 0; i < vectorSize - 1; i++)
-		{
-			if (exceptZero[i] == exceptZero[i + 1])
+			A[i][j] = FinalQueue.front();
+			if (sol < A[i][j])
 			{
-				que.push(exceptZero[i] * 2);
-				exceptZero[i] = 0;
-				exceptZero[i + 1] = 0;
+				sol = A[i][j];
 			}
-			else if (exceptZero[i] != 0)
-			{
-				que.push(exceptZero[i]);
-			}
-		}
-		if (exceptZero[vectorSize - 1] != 0)
-		{
-			que.push(exceptZero[vectorSize - 1]);
-		}
-		for (int i = N - 1; i >= 0; i--)
-		{
-			if (que.size() != 0)
-			{
-				blocks[i][j] = que.front();
-				if (blocks[i][j] > Sol)
-				{
-					Sol = blocks[i][j];
-				}
-				que.pop();
-			}
-			else
-			{
-				blocks[i][j] = 0;
-			}
+			FinalQueue.pop();
+			j--;
 		}
 	}
 }
 void MoveLeft()
 {
-	queue<int> que;
-	for (int i = 0; i < N; i++) //위에서 아래로 이동하면서 그 행의 오른쪽에서 왼쪽으로, 블록 2개씩 비교해 숫자가 같으면 합친다.
+	for (int i = 0; i < N; i++)
 	{
-		vector<int> exceptZero;
-		for (int j = 0; j < N; j++)
+		int j = 0;
+		for (j; j <N; j++)
 		{
-			if (blocks[i][j] != 0)
+			if (A[i][j] == 0)
 			{
-				exceptZero.push_back(blocks[i][j]);
+				continue;
 			}
-		}
-		int vectorSize = exceptZero.size();
-		if (vectorSize == 0)
-		{
-			continue;
-		}
-		for (int j = 0; j < vectorSize - 1; j++)
-		{
-			if (exceptZero[j] == exceptZero[j + 1])
+			if (que.size() > 0 && que.front() == A[i][j])
 			{
-				que.push(exceptZero[j] * 2);
-				exceptZero[j] = 0;
-				exceptZero[j + 1] = 0;
-			}
-			else if (exceptZero[j] != 0)
-			{
-				que.push(exceptZero[j]);
-			}
-		}
-		if (exceptZero[vectorSize - 1] != 0)
-		{
-			que.push(exceptZero[vectorSize - 1]);
-		}
-		for (int j = 0; j < N; j++)
-		{
-			if (que.size() != 0)
-			{
-				blocks[i][j] = que.front();
-				if (blocks[i][j] > Sol)
-				{
-					Sol = blocks[i][j];
-				}
 				que.pop();
+				FinalQueue.push(A[i][j] * 2);
+			}
+			else if (que.size() > 0)
+			{
+				FinalQueue.push(que.front());
+				que.pop();
+				que.push(A[i][j]);
 			}
 			else
 			{
-				blocks[i][j] = 0;
+				que.push(A[i][j]);
 			}
+			A[i][j] = 0;
+		}
+		while (que.size() != 0)
+		{
+			FinalQueue.push(que.front());
+			que.pop();
+		}
+		j = 0;
+		while (FinalQueue.size() != 0)
+		{
+			A[i][j] = FinalQueue.front();
+			if (sol < A[i][j])
+			{
+				sol = A[i][j];
+			}
+			FinalQueue.pop();
+			j++;
 		}
 	}
 }
-void MoveRight()
+void MoveTop()
 {
-	queue<int> que;
-	for (int i = 0; i < N; i++) //위에서 아래로 이동하면서 그 행의 왼쪽에서 오른쪽으로, 블록 2개씩 비교해 숫자가 같으면 합친다.
+	for (int j = 0; j < N; j++)
 	{
-		vector<int> exceptZero;
-		for (int j = N - 1; j >= 0; j--)
+		int i = 0;
+		for (i; i < N; i++)
 		{
-			if (blocks[i][j] != 0)
+			if (A[i][j] == 0)
 			{
-				exceptZero.push_back(blocks[i][j]);
+				continue;
 			}
-		}
-		int vectorSize = exceptZero.size();
-		if (vectorSize == 0)
-		{
-			continue;
-		}
-		for (int j = 0; j < vectorSize - 1; j++)
-		{
-			if (exceptZero[j] == exceptZero[j + 1])
+			if (que.size() > 0 && que.front() == A[i][j])
 			{
-				que.push(exceptZero[j] * 2);
-				exceptZero[j] = 0;
-				exceptZero[j + 1] = 0;
-			}
-			else if (exceptZero[j] != 0)
-			{
-				que.push(exceptZero[j]);
-			}
-		}
-		if (exceptZero[vectorSize - 1] != 0)
-		{
-			que.push(exceptZero[vectorSize - 1]);
-		}
-		for (int j = N - 1; j >= 0; j--)
-		{
-			if (que.size() != 0)
-			{
-				blocks[i][j] = que.front();
-				if (blocks[i][j] > Sol)
-				{
-					Sol = blocks[i][j];
-				}
 				que.pop();
+				FinalQueue.push(A[i][j] * 2);
+			}
+			else if (que.size() > 0)
+			{
+				FinalQueue.push(que.front());
+				que.pop();
+				que.push(A[i][j]);
 			}
 			else
 			{
-				blocks[i][j] = 0;
+				que.push(A[i][j]);
 			}
+			A[i][j] = 0;
+		}
+		while (que.size() != 0)
+		{
+			FinalQueue.push(que.front());
+			que.pop();
+		}
+		i = 0;
+		while (FinalQueue.size() != 0)
+		{
+			A[i][j] = FinalQueue.front();
+			if (sol < A[i][j])
+			{
+				sol = A[i][j];
+			}
+			FinalQueue.pop();
+			i++;
 		}
 	}
 }
-void MoveBlocks(int num)
+void MoveDown()
 {
-	switch (num) //0:up 1:down 2:
+	for (int j = 0; j < N; j++)
 	{
-	case 0:
-		MoveUp();
-		break;
-	case 1:
-		MoveDown();
-		break;
-	case 2:
-		MoveLeft();
-		break;
-	case 3:
-		MoveRight();
-		break;
-	default:
-		break;
+		int i = N-1;
+		for (i; i >= 0; i--)
+		{
+			if (A[i][j] == 0)
+			{
+				continue;
+			}
+			if (que.size() > 0 && que.front() == A[i][j])
+			{
+				que.pop();
+				FinalQueue.push(A[i][j] * 2);
+			}
+			else if (que.size() > 0)
+			{
+				FinalQueue.push(que.front());
+				que.pop();
+				que.push(A[i][j]);
+			}
+			else
+			{
+				que.push(A[i][j]);
+			}
+			A[i][j] = 0;
+		}
+		while (que.size() != 0)
+		{
+			FinalQueue.push(que.front());
+			que.pop();
+		}
+		i = N-1;
+		while (FinalQueue.size() != 0)
+		{
+			A[i][j] = FinalQueue.front();
+			if (sol < A[i][j])
+			{
+				sol = A[i][j];
+			}
+			FinalQueue.pop();
+			i--;
+		}
 	}
 }
-
-void LoadBackup()
+void init()
 {
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < N; j++)
 		{
-			blocks[i][j] = BackupS[i][j];
+			A[i][j] = Origin[i][j];
 		}
-	}
-}
-void ShowBlocks()
-{
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			cout<< blocks[i][j]<<" ";
-		}
-		cout << "\n";
 	}
 }
 int main()
@@ -266,39 +206,112 @@ int main()
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
 	cin >> N;
-	blocks = new int* [N];
-	BackupS = new int* [N];
+	A = new int*[N];
+	Origin = new int* [N];
 	for (int i = 0; i < N; i++)
 	{
-		blocks[i] = new int[N];
-		BackupS[i] = new int[N];
+		A[i] = new int[N];
+		Origin[i] = new int[N];
+	}
+	for (int i = 0; i < N; i++)
+	{
 		for (int j = 0; j < N; j++)
 		{
-			cin >> blocks[i][j];
-			BackupS[i][j] = blocks[i][j];
+			cin >> A[i][j];
+			Origin[i][j] = A[i][j];
 		}
 	}
-	for (int i = 0; i < 4; i++)
+	for (int a = 0; a < 4; a++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int b = 0; b < 4; b++)
 		{
-			for (int k = 0; k < 4; k++)
+			for (int c = 0; c < 4; c++)
 			{
-				for (int z = 0; z < 4; z++)
+				for (int d = 0; d < 4; d++)
 				{
-					for (int x = 0; x < 4; x++)
+					for (int e = 0; e < 4; e++)
 					{
-						MoveBlocks(i);
-						MoveBlocks(j);
-						MoveBlocks(k);
-						MoveBlocks(z);
-						MoveBlocks(x);
-						LoadBackup();
+						switch (a)
+						{
+						case 0:
+							MoveDown();
+							break;
+						case 1:
+							MoveLeft();
+							break;
+						case 2:
+							MoveRight();
+							break;
+						case 3:
+							MoveTop();
+							break;
+						}
+						switch (b)
+						{
+						case 0:
+							MoveDown();
+							break;
+						case 1:
+							MoveLeft();
+							break;
+						case 2:
+							MoveRight();
+							break;
+						case 3:
+							MoveTop();
+							break;
+						}
+						switch (c)
+						{
+						case 0:
+							MoveDown();
+							break;
+						case 1:
+							MoveLeft();
+							break;
+						case 2:
+							MoveRight();
+							break;
+						case 3:
+							MoveTop();
+							break;
+						}
+						switch (d)
+						{
+						case 0:
+							MoveDown();
+							break;
+						case 1:
+							MoveLeft();
+							break;
+						case 2:
+							MoveRight();
+							break;
+						case 3:
+							MoveTop();
+							break;
+						}
+						switch (e)
+						{
+						case 0:
+							MoveDown();
+							break;
+						case 1:
+							MoveLeft();
+							break;
+						case 2:
+							MoveRight();
+							break;
+						case 3:
+							MoveTop();
+							break;
+						}
+						init();
 					}
 				}
 			}
 		}
 	}
-	cout << Sol;
+	cout << sol;
 	return 0;
 }
