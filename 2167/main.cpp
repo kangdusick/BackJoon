@@ -1,55 +1,84 @@
 #include <iostream>
 using namespace std;
-int** Ks;
-int** SumA;
-int N, M, K;
+int N, M;
+int K;
+int** A;
+int** B;
+int** DP;
+int Sol(int x1, int y1, int x2, int y2)
+{
+	int sol = DP[x2][y2];
+	if (x1 == 0 && y1 == 0)
+	{
+		return sol;
+	}
+	if (y1 >= 1)
+	{
+		sol -= DP[x2][y1-1];
+	}
+	if (x1 >= 1)
+	{
+		sol -= DP[x1 - 1][y2];
+	}
+	if (y1>= 1&& x1 >= 1)
+	{
+		sol += DP[x1 - 1][y1 - 1];
+	}
+	return sol;
+}
+void SetDP()
+{
+	DP[0][0] = A[0][0];
+	for (int i = 1; i < N; i++)
+	{
+		DP[i][0] += DP[i - 1][0]+A[i][0];
+	}
+	for (int j = 1; j < M; j++)
+	{
+		DP[0][j] += DP[0][j-1] + A[0][j];
+	}
+	for (int i = 1; i < N; i++)
+	{
+		for (int j = 1; j < M; j++)
+		{
+			DP[i][j] = DP[i][j - 1]+DP[i-1][j]-DP[i-1][j-1]+A[i][j];
+		}
+	}
+}
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
-	
-	int a, b, c, d,num;
-	int* sol;
 	cin >> N >> M;
-	SumA = new int* [N];
+	A = new int* [N];
+	DP = new int* [N];
 	for (int i = 0; i < N; i++)
 	{
-		SumA[i] = new int[M];
-		int tempSum = 0;
+		A[i] = new int[M];
+		DP[i] = new int[M];
+	}
+	for (int i = 0; i < N; i++)
+	{
 		for (int j = 0; j < M; j++)
 		{
-			cin >> num;
-			tempSum += num;
-			SumA[i][j] = tempSum;
+			cin >> A[i][j];
+			DP[i][j] = 0;
 		}
 	}
 	cin >> K;
-	sol = new int[K];
+	B = new int* [K];
 	for (int i = 0; i < K; i++)
 	{
-		sol[i] = 0;
-		cin >> a >> b >> c >> d;
-		for (int ii = a - 1; ii < c; ii++)
-		{
-			sol[i] += SumA[ii][d - 1];
-			if(b-2>=0)
-			sol[i] -= SumA[ii][b - 2];
-		}
-
+		B[i] = new int[4];
 	}
 	for (int i = 0; i < K; i++)
 	{
-		cout << sol[i]<<"\n";
+		cin >> B[i][0] >> B[i][1] >> B[i][2] >> B[i][3];
+	}
+	SetDP();
+	for (int i = 0; i < K; i++)
+	{
+		cout << Sol(B[i][0]-1, B[i][1]-1, B[i][2]-1, B[i][3]-1)<<"\n";
 	}
 	return 0;
 }
-
-/*
-2 3
-1 2 4
-8 16 32
-3
-2 2 2 2
-1 2 1 2
-1 3 2 3
-*/
