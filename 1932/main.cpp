@@ -2,57 +2,37 @@
 #include <vector>
 using namespace std;
 int n;
-vector<int>* triangle;
-vector<int>* roots;
-void findRoot(int level)
-{
-	if (level == n - 2)
-	{
-		for (int i = 0; i < level + 1; i++)
-		{
-			int bigger = triangle[level + 1][i] >= triangle[level + 1][i + 1] ? triangle[level + 1][i] : triangle[level + 1][i + 1];
-			roots[level].push_back(triangle[level][i] + bigger);
-		}
-
-	}
-	else
-	{
-		for (int i = 0; i < level + 1; i++)
-		{
-			int bigger = roots[level + 1][i] >= roots[level + 1][i + 1] ? roots[level + 1][i] : roots[level + 1][i + 1];
-			roots[level].push_back(triangle[level][i] + bigger);
-		}
-
-	}
-	if (level == 0)
-	{
-		return;
-	}
-	findRoot(level - 1);
-}
-
+vector<int> nums[501];
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
-	int d;
 	cin >> n;
-	triangle = new vector<int>[n];
-	roots = new vector<int>[n - 1];
-	for (int i = 0; i < n; i++)
+	int input;
+	int downIndex;
+	for (int i = 1; i <= n; i++)
 	{
-		for (int j = 0; j <= i; j++)
+		for (int j = 0; j < i; j++)
 		{
-			cin >> d;
-			triangle[i].push_back(d);
+			cin >> input;
+			nums[i].push_back(input);
 		}
 	}
-	if (n == 1)
+	for (int i = n-1; i >= 1; i--)
 	{
-		cout << triangle[0][0];
-		return 0;
+		downIndex = i + 1;
+		for (int j = 0; j < i; j++)
+		{
+			if (nums[downIndex][j] > nums[downIndex][j + 1])
+			{
+				nums[i][j] += nums[downIndex][j];
+			}
+			else
+			{
+				nums[i][j] += nums[downIndex][j+1];
+			}
+		}
 	}
-	findRoot(n - 2);
-	cout << roots[0][0];
+	cout << nums[1][0];
 	return 0;
 }
