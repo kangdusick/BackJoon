@@ -1,44 +1,36 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
 using namespace std;
-int A[1000];
-int N;
-int B[1000];
-void FindSum(int num)
-{
-	vector<int> temp;
-	for (int i = num; i < N; i++)
-	{
-		if (A[i] != A[num]&&A[i]>A[num])
-		{
-			temp.push_back(B[i]);
-		}
-	}
-	if (temp.size() == 0)
-	{
-		B[num] = A[num];
-		return;
-	}
-	sort(temp.begin(), temp.end(),greater<int>());
-	B[num] = temp[0] + A[num];
-}
 
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
+	int N;
+	int* A;
+	int* DP;
+	int maxx;
 	cin >> N;
+	A = new int[N];
+	DP = new int[N];
 	for (int i = 0; i < N; i++)
 	{
 		cin >> A[i];
+		DP[i] = A[i];
 	}
-	for (int i = N - 1; i >= 0; i--)
+	for (int i = 0; i < N; i++)
 	{
-		FindSum(i);
+		maxx = 0;
+		for (int j = 0; j < i; j++)
+		{
+			if (A[j] < A[i] && DP[j]>maxx)
+			{
+				maxx = DP[j];
+			}
+		}
+		DP[i] += maxx;
 	}
-	sort(B, B + 1000,greater<int>());
-	cout << B[0];
-		
+	sort(DP, DP + N);
+	cout << DP[N-1];
 	return 0;
 }
