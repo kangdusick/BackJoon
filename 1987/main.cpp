@@ -1,118 +1,132 @@
-#include <iostream>
+#include <iostream> 
 using namespace std;
-string* strings;
-char path[26];
-int maxLevel;
 int R, C;
-bool isEnd = false;
-bool CheckPath(int level, int x, int y)
+char** board;
+int maxx = 0;
+bool check[26];
+int ConvertAlphaToInt(char a)
 {
-	if (x < 0 || y < 0 || x >= R || y >= C)
+	switch (a)
 	{
-		return false;
+	case 'A':
+		return 0;
+	case 'B':
+		return 1;
+	case 'C':
+		return 2;
+	case 'D':
+		return 3;
+	case 'E':
+		return 4;
+	case 'F':
+		return 5;
+	case 'G':
+		return 6;
+	case 'H':
+		return 7;
+	case 'I':
+		return 8;
+	case 'J':
+		return 9;
+	case 'K':
+		return 10;
+	case 'L':
+		return 11;
+	case 'M':
+		return 12;
+	case 'N':
+		return 13;
+	case 'O':
+		return 14;
+	case 'P':
+		return 15;
+	case 'Q':
+		return 16;
+	case 'R':
+		return 17;
+	case 'S':
+		return 18;
+	case 'T':
+		return 19;
+	case 'U':
+		return 20;
+	case 'V':
+		return 21;
+	case 'W':
+		return 22;
+	case 'X':
+		return 23;
+	case 'Y':
+		return 24;
+	case 'Z':
+		return 25;
 	}
-	for (int i = 0; i <= level; i++)
-	{
-		if (path[i] == strings[x][y])
-		{
-			return false;
-		}
-	}
-	return true;
 }
-void FindPath(int level, int x, int y )
+void alpha(int x, int y, int sol)
 {
-	if (isEnd == true)
+	int temp;
+	check[ConvertAlphaToInt(board[x][y])] = true;
+	if (sol > maxx)
 	{
-		return;
+		maxx = sol;
 	}
-	path[level] = strings[x][y];
-	if (CheckPath(level, x + 1, y))
+	for (int i = 0; i < 4; i++)
 	{
-		FindPath(level + 1, x + 1, y);
-	}
-	else
-	{
-		if (maxLevel < level)
+		switch (i)
 		{
-			maxLevel = level;
-			if (maxLevel == 25)
+		case 0://╩С
+			temp = x - 1;
+			if (temp >= 0 && check[ConvertAlphaToInt(board[temp][y])] == false)
 			{
-				isEnd = true;
+				alpha(temp, y, sol + 1);
+				check[ConvertAlphaToInt(board[temp][y])] = false;
 			}
-		}
-	}
-	if (CheckPath(level, x - 1, y))
-	{
-		FindPath(level + 1, x - 1, y);
-	}
-	else
-	{
-		if (maxLevel < level)
-		{
-			maxLevel = level;
-		}
-	}
-	if (CheckPath(level, x, y+1))
-	{
-		FindPath(level + 1, x , y+1);
-	}
-	else
-	{
-		if (maxLevel < level)
-		{
-			maxLevel = level;
-		}
-	}
-	if (CheckPath(level, x , y-1))
-	{
-		FindPath(level + 1, x, y-1);
-	}
-	else
-	{
-		if (maxLevel < level)
-		{
-			maxLevel = level;
+			break;
+		case 1://го
+			temp = x + 1;
+			if (temp < R && check[ConvertAlphaToInt(board[temp][y])] == false)
+			{
+				alpha(temp, y, sol + 1);
+				check[ConvertAlphaToInt(board[temp][y])] = false;
+			}
+			break;
+		case 2://аб
+			temp = y - 1;
+			if (temp >= 0 && check[ConvertAlphaToInt(board[x][temp])] == false)
+			{
+				alpha(x, temp, sol + 1);
+				check[ConvertAlphaToInt(board[x][temp])] = false;
+			}
+			break;
+		case 3://©Л
+			temp = y + 1;
+			if (temp < C && check[ConvertAlphaToInt(board[x][temp])] == false)
+			{
+				alpha(x, temp, sol + 1);
+				check[ConvertAlphaToInt(board[x][temp])] = false;
+			}
+			break;
 		}
 	}
 }
-
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
 	cin >> R >> C;
-	strings = new string[R];
+	board = new char* [R];
 	for (int i = 0; i < R; i++)
 	{
-		cin >> strings[i];
+		board[i] = new char[C];
 	}
-	FindPath(0, 0, 0);
-	cout << maxLevel+1;
+	for (int i = 0; i < R; i++)
+	{
+		for (int j = 0; j < C; j++)
+		{
+			cin >> board[i][j];
+		}
+	}
+	alpha(0, 0, 1);
+	cout << maxx;
 	return 0;
 }
-
-/*
-20 20
-ZYXWVUTSRQPONMLKJIHG
-YXWVUTSRQPONMLKJIHGF
-XWVUTSRQPONMLKJIHGFE
-WVUTSRQPONMLKJIHGFED
-VUTSRQPONMLKJIHGFEDC
-UTSRQPONMLKJIHGFEhDCB
-TSRQPONMLKJIHGFEDCBA
-SRQPONMLKJIHGFEDCBAA
-RQPONMLKJIHGFEDCBAAA
-QPONMLKJIHGFEDCBAAAA
-PONMLKJIHGFEDCBAAAAA
-ONMLKJIHGFEDCBAAAAAA
-NMLKJIHGFEDCBAAAAAAA
-MLKJIHGFEDCBAAAAAAAA
-LKJIHGFEDCBAAAAAAAAA
-KJIHGFEDCBAAAAAAAAAA
-JIHGFEDCBAAAAAAAAAAA
-IHGFEDCBAAAAAAAAAAAA
-HGFEDCBAAAAAAAAAAAAA
-GFEDCBAAAAAAAAAAAAAA
-╢Д:26
-*/
