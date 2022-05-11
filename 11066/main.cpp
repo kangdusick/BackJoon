@@ -1,66 +1,47 @@
 #include <iostream>
-#include <queue>
 #include <vector>
-#include <map>
+#include <queue>
+#include <list>
 using namespace std;
-typedef long long int lld;
+int T;
+int K;
 int main()
 {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
-	int T, K, num;
-	map<int, lld> files;
-	map<int, lld>::iterator iter;
-	map<int, lld>::iterator tempiter;
-	vector<lld> sol;
 	cin >> T;
+	vector<int>* Tcase;
+	list<int> buffers;
+	list<int>::iterator iter;
+	vector<vector<int>> buffer;
+	int inputs;
+	Tcase = new vector<int>[T];
+	bool init = false;
 	for (int i = 0; i < T; i++)
 	{
 		cin >> K;
-		lld cost=0;
-		lld sum = 0;
-		
 		for (int j = 0; j < K; j++)
 		{
-			cin >> num;
-			files[j] = num;
+			cin >> inputs;
+			Tcase[i].push_back(inputs);
 		}
-		int SumCost = 0;
-		while (true)
-		{
-			int fileSize = files.size();
-			int min = 2100000000;
-			if (fileSize == 1)
-			{
-				break;
-			}
-			int cost = 0;
-			tempiter = files.begin();
-			for (int i = 0; i < fileSize-1; i++)
-			{
-				cost = 0;
-				cost += tempiter->second;
-				tempiter++;
-				cost += tempiter->second;
-				if (cost < min)
-				{
-					min = cost;
-					iter = tempiter;
-				}
-			}
-			tempiter = iter;
-			tempiter--;
-			files.erase(iter);
-			files[tempiter->first] = min;
-			SumCost += min;
-		}
-		iter = files.begin();
-		sol.push_back(SumCost);
-		files.clear();
 	}
+	iter = buffers.begin();
+	iter++;
+	buffers.erase(iter);
+	buffers.insert(iter,5);
 	for (int i = 0; i < T; i++)
 	{
-		cout << sol[i]<<"\n";
+		if (!init)
+		{
+			buffer.push_back(Tcase[i]);
+			init = true;
+		}
+		if (buffer.size() == 1 && buffer[0].size()==1)
+		{
+			init = false;
+			continue;
+		}
 	}
 	return 0;
 }

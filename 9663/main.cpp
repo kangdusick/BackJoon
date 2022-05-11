@@ -1,40 +1,165 @@
 #include <iostream>
-#define MAX 15
 using namespace std;
-
-int col[MAX];
-int N, total = 0;
-
-bool check(int level)
+int N;
+int endNum;
+int sol=0;
+int** check;
+void SetCheck(int x, int n)
 {
-    for (int i = 0; i < level; i++)
-    {//가로 세로 대각선
-        if (col[i] == col[level] || i == level || abs(col[i] - col[level]) == abs(i - level))
-        {
-            return false;
-        }
-    }
-    return true;
+	//가로
+	for (int i = 0; i < N; i++)
+	{
+		check[x][i]++;
+	}
+	//세로
+	for (int i = 0; i < N; i++)
+	{
+		check[i][n]++;
+	}
+	check[x][n]--;
+	//대각선1
+	for (int i = 1; i < N; i++)
+	{
+		if (x + i >= 0 && x + i < N && n + i >= 0 && n + i < N)
+		{
+			check[x + i][n + i] ++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 1; i < N; i++)
+	{
+		if (x - i >= 0 && x - i < N && n - i >= 0 && n - i < N)
+		{
+			check[x - i][n - i] ++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	//대각선2
+	for (int i = 1; i < N; i++)
+	{
+		if (x + i >= 0 && x + i < N && n - i >= 0 && n - i < N)
+		{
+			check[x + i][n - i] ++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 1; i < N; i++)
+	{
+		if (x - i >= 0 && x - i < N && n + i >= 0 && n + i < N)
+		{
+			check[x - i][n + i] ++;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
-
-void nqueen(int x)
+void UnsetCheck(int x, int n)
 {
-    if (x == N)
-        total++;
-    else
-    {
-        for (int i = 0; i < N; i++)
-        {
-            col[x] = i;
-            if (check(x))
-            {
-                nqueen(x + 1);
-            }
-        }
-    }
+	//가로
+	for (int i = 0; i < N; i++)
+	{
+		check[x][i]--;
+	}
+	//세로
+	for (int i = 0; i < N; i++)
+	{
+		check[i][n]--;
+	}
+	check[x][n]++;
+	//대각선1
+	for (int i = 1; i < N; i++)
+	{
+		if (x + i >= 0 && x + i < N && n + i >= 0 && n + i < N)
+		{
+			check[x + i][n + i] --;
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 1; i < N; i++)
+	{
+		if (x - i >= 0 && x - i < N && n - i >= 0 && n - i < N)
+		{
+			check[x - i][n - i] --;
+		}
+		else
+		{
+			break;
+		}
+	}
+	//대각선2
+	for (int i = 1; i < N; i++)
+	{
+		if (x + i >= 0 && x + i < N && n - i >= 0 && n - i < N)
+		{
+			check[x + i][n - i] --;
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = 1; i < N; i++)
+	{
+		if (x - i >= 0 && x - i < N && n + i >= 0 && n + i < N)
+		{
+			check[x - i][n + i] --;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
-int main() {
-    cin >> N;
-    nqueen(0);
-    cout << total;
+void Nqueen(int x)
+{
+	if (x == N)
+	{
+		sol++;
+		return;
+	}
+	for (int i = 0; i < N; i++)
+	{
+		if (check[x][i] == 0)
+		{
+			SetCheck(x, i);
+			Nqueen(x + 1);
+			UnsetCheck(x,i);
+		}
+	}
+}
+int main()
+{
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cin >> N;
+	check = new int* [N];
+	for (int i = 0; i < N; i++)
+	{
+		check[i] = new int[N];
+	}
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			check[i][j] = 0;
+		}
+	}
+	endNum = N - 1;
+	Nqueen(0);
+	cout << sol;
+	return 0;
 }
